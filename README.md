@@ -36,7 +36,11 @@ JWT角色真实在后端执行，阅读者写操作403、研究员审批403、�
 
 ## 六页与五实体
 
-联合量总览、来源与严格拆分、稳健拟合配置、偏离与校准证据、人工补测审阅、过程留痕。`ArchiveStudy / ClimateWindow / FeatureSpec / DeviationRun / ReviewNote` 均贯穿表、model、schema、service、route、前端API、store及页面/组件；另有User/Audit。来源数值/角色/特征只读核对，窗口批注可写，历史运行使用冻结快照。
+联合量总览、来源与严格拆分、稳健拟合配置、偏离与校准证据、人工补测审阅、过程留痕。`ArchiveStudy / ClimateWindow / FeatureSpec / DeviationRun / ReviewNote` 均贯穿表、model、schema、service、route、前端API、store及页面/组件；另有User/Audit，撤回档案`WindowRetraction`贯穿model、schema、service、route与来源页。来源数值/角色/特征只读核对，窗口批注可写，历史运行使用冻结快照。
+
+## 来源撤回与清理
+
+来源页支持研究员/负责人勾选窗口批量撤回并填写原因。撤回建档立即生效：引用研究停用（总览与配置页不可新建运行），已排队运行被worker取消，获批档案停止下载；无关研究照常。清理随后台心跳与backend/worker启动续跑，逐步清除源值、冻结输入快照、结果JSON与`/artifacts`产物中的对应原值，按窗口持久化进度（源值→逐运行档案→校验），中断重启后按进度恢复；只有各处原值均清除才标记清理完成，来源页每2秒轮询展示进度。撤回记录保留原因、原值SHA256指纹与历史统计（关联运行/完成/获批数）供追查，分数、p与fit/input指纹作为历史统计保留；重复撤回同一窗口不重复建档、不重复留痕。运行中的研究晚到保存时复查撤回，命中即清理后才落库，绝不恢复原值或下载资格。
 
 seed三研究各450条，共1350窗口、12个特征定义。每研究固定train200/cal150/test100，窗口编号是稳定身份而非连续时间序列。SL-01四量联合Gaussian主群；SL-02只在train前20条加入极端值，cal/test仍来自同一独立主群；SL-03第四量为前两量线性组合，训练秩亏。种子260/261/262、固定生成R与尺度写在seed脚本，不是实测数据。自然键为email、study code、(study,window code)、(study,feature code/position)、基线运行name；重复seed只补缺失，不覆盖用户批注或已批准建议。`SEED_DEMO=true`启动自动执行，失败只记日志，独立seed命令仍可运行。
 

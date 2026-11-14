@@ -10,3 +10,4 @@ class StudyOutput(BaseModel):
     feature_count:int
     supported:bool
     reason:str
+    retracted_count:int=0

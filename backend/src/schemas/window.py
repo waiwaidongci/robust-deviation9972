@@ -7,5 +7,6 @@ class WindowOutput(BaseModel):
     split:Literal['train','cal','test']
     values:dict
     note:str
+    retracted:bool=False
 class WindowAnnotation(BaseModel):
     note:str=Field(min_length=8,max_length=1500)

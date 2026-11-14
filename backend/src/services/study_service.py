@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from ..models import ArchiveStudy,ClimateWindow,FeatureSpec
 from ..utils.serialize import record
 from .analysis_service import prepare_snapshot
+from .retraction_service import study_retracted_count
 
 def get_study(db,sid):
     row=db.get(ArchiveStudy,sid)
@@ -14,5 +15,7 @@ def list_studies(db):
         snapshot=create_snapshot(db,s);supported=True;reason='拆分完整、训练满秩；可运行稳健研究'
         try:prepare_snapshot(snapshot)
         except ValueError as e:supported=False;reason=str(e)
-        out.append({**record(s),"counts":{role:sum(w['split']==role for w in snapshot['windows']) for role in ['train','cal','test']},"feature_count":len(snapshot['features']),"supported":supported,"reason":reason})
+        retracted=study_retracted_count(db,s.id)
+        if retracted:supported=False;reason=f'{retracted}个来源窗口已确认失准并撤回，研究停用；原值清理后亦不可恢复使用'
+        out.append({**record(s),"counts":{role:sum(w['split']==role for w in snapshot['windows']) for role in ['train','cal','test']},"feature_count":len(snapshot['features']),"supported":supported,"reason":reason,"retracted_count":retracted})
     return out

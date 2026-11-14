@@ -11,9 +11,14 @@ from .routes import auth,studies,windows,features,runs,notes,audits
 from .middlewares.errors import ErrorMiddleware
 from .middlewares.rate_limit import RateLimitMiddleware
 from .services.run_service import queue
+from .services.retraction_service import run_cleanup
 @asynccontextmanager
 async def lifespan(app):
     Base.metadata.create_all(engine)
+    from .config.database import SessionLocal
+    with SessionLocal() as db:
+        try:run_cleanup(db)
+        except Exception:logging.exception("retraction cleanup resume failed")
     if SEED_DEMO:
         try:
             from scripts.seed_demo import seed

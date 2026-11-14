@@ -1,6 +1,7 @@
 export interface User{id:number;name:string;email:string;role:'admin'|'analyst'|'viewer'}
-export interface Study{id:number;code:string;name:string;description:string;source:string;default_alpha:number;counts:Record<string,number>;feature_count:number;supported:boolean;reason:string}
-export interface Window{id:number;study_id:number;code:string;split:'train'|'cal'|'test';values:Record<string,number>;note:string}
+export interface Study{id:number;code:string;name:string;description:string;source:string;default_alpha:number;counts:Record<string,number>;feature_count:number;supported:boolean;reason:string;retracted_count:number}
+export interface Window{id:number;study_id:number;code:string;split:'train'|'cal'|'test';values:Record<string,number>;note:string;retracted:boolean}
+export interface Retraction{id:number;window_id:number;study_id:number;code:string;split:'train'|'cal'|'test';reason:string;fingerprint:string;stats:{runs_total:number;runs_completed:number;runs_approved:number;values_purged:number;feature_codes:string[]};status:'pending'|'cleaning'|'completed';progress:{source?:boolean;runs_total?:number;runs_done?:number[]};actor:string;created_at:string}
 export interface Feature{id:number;study_id:number;code:string;label:string;unit:string;position:number;meaning:string}
 export interface Fit{scaler_mean:number[];scaler_scale:number[];location_scaled:number[];covariance_scaled:number[][];raw_location_scaled:number[];raw_covariance_scaled:number[][];location_original:number[];covariance_original:number[][];raw_location_original:number[];raw_covariance_original:number[][];raw_support_mask:boolean[];support_mask:boolean[];raw_support_count:number;support_count:number;support_fraction:number;rank:number;condition_number:number;train_distances:number[];raw_support_codes:string[];support_codes:string[];warnings:string[];fit_note:string}
 export interface TestScore{window:Window;d2:number;p:number;cal_ge_count:number;selected:boolean}
