@@ -1,0 +1,1 @@
+import {request} from './client';import {Window} from '../types/domain';export const getWindows=(id:number)=>request<Window[]>(`/studies/${id}/windows`);export const annotateWindow=(id:number,note:string)=>request<Window>(`/windows/${id}`,{method:'PATCH',body:JSON.stringify({note})});
